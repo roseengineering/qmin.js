@@ -6,16 +6,17 @@
         global.$ = factory();
     }
 }(this, function(){
-    'use strict';
     var $ = function(sel, cb){
-            var i, ob = Object.create(fn);
-            if (!sel) sel = []
-            else if (typeof sel === 'string') 
-                sel = document.querySelectorAll(sel); 
-            else 
-                sel = Array.isArray(sel) ? sel : [sel];
-            for (i = 0; i < sel.length; i++) ob[i] = sel[i];
-            ob.length = i;
+            var el, i, k, n = 0, ob = Object.create(fn);
+            sel = sel || [];
+            if (typeof sel === 'string') sel = document.querySelectorAll(sel); 
+            else sel = Array.isArray(sel) ? sel : [sel];
+            for (i = 0; i < sel.length; i++){
+                el = sel[i];
+                if (el instanceof $) for (k = 0; k < el.length; k++) ob[n++] = el[k]; 
+                else ob[n++] = el;
+            }
+            ob.length = n;
             return cb ? ob.forEach(cb) : ob;
         },
         fn = $.fn = $.prototype;
@@ -33,7 +34,7 @@
                 el.classList.add(root);
                 list = $('.' + root + ' ' + sel);
                 el.classList.remove(root);
-                return [].slice.call(list);
+                return list;
             });
         return cb ? ob.forEach(cb) : ob;
     };
